@@ -3,107 +3,199 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Carta • Convite de 15 Anos</title>
+  <title>Surpresa</title>
   <style>
-    :root{
-      --bg: #0f0d0d;
+    :root {
+      --bg: #f9e79f; /* fundo dourado claro */
       --envelope: #b12b2b;
-      --envelope-shadow: #8f1f1f;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
-      background:var(--bg);
-      display:grid; place-items:center; padding:24px; color:#fff;
-    }
-
-    /* container central */
-    .wrapper{width:100%; max-width:520px; display:flex; justify-content:center}
-
-    /* envelope (fechado) */
-    .envelope-wrapper{position:relative; width:360px}
-    .envelope{width:100%; height:240px; border-radius:10px; position:relative; box-shadow:0 18px 40px rgba(0,0,0,.5); cursor:pointer;}
-
-    /* desenhos do envelope (mantive o visual anterior) */
-    .env-base{position:absolute; inset:0; background:linear-gradient(#c53434, var(--envelope)); border-radius:10px; overflow:hidden; z-index:1}
-    .env-left, .env-right{position:absolute; top:0; bottom:0; width:55%; z-index:2}
-    .env-left{left:0; clip-path:polygon(0 0, 0 100%, 76% 50%); background:linear-gradient(90deg,#a72626,#c43333)}
-    .env-right{right:0; clip-path:polygon(100% 0, 24% 50%, 100% 100%); background:linear-gradient(90deg,#cf3b3b,#a72424)}
-    .env-bottom{position:absolute; left:0; right:0; bottom:0; height:55%; clip-path:polygon(0 0, 50% 65%, 100% 0, 100% 100%, 0 100%); background:linear-gradient(#9f2020,#8a1b1b); z-index:1}
-    .env-flap{position:absolute; inset:0; clip-path:polygon(0 0, 100% 0, 50% 58%); background:linear-gradient(180deg, #d74343, #b92f2f); z-index:3}
-
-    /* texto sobre o envelope (na frente) */
-    .message{
-      position:absolute; left:50%; top:62%; transform:translate(-50%, -50%);
-      z-index:4; pointer-events:none; /* permite clicar no envelope por trás do texto */
-      font-size:1.05rem; font-weight:600; color:#fff; text-shadow:0 6px 18px rgba(0,0,0,.55);
-      text-align:center; width:90%;
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: ui-sans-serif, system-ui, Arial;
+      background: var(--bg);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
     }
 
-    /* efeito visual ao clicar: leve "press" */
-    .envelope:active{ transform:translateY(2px) scale(.998); }
-
-    /* lightbox */
-    dialog#lightbox{ width:min(92vw, 860px); border:0; border-radius:14px; padding:0; background:#0e0b0a; box-shadow:0 30px 100px rgba(0,0,0,.6) }
-    dialog#lightbox::backdrop{ background:rgba(0,0,0,.6); backdrop-filter: blur(2px); }
-    .img-wrap img{ display:block; width:100%; height:auto; border-radius:12px; }
-    .close{ position:absolute; top:10px; right:10px; background:rgba(255,255,255,.06); color:#fff; border:0; border-radius:10px; padding:10px 12px; font-size:14px; cursor:pointer }
-
-    /* acessibilidade: foco no "botão" envelope quando navegado por teclado */
-    .envelope[role="button"]:focus{ outline:3px solid rgba(215,179,94,.18); outline-offset:6px }
-
-    @media (max-width:420px){
-      .envelope-wrapper{width:92vw}
+    /* Canvas fogos */
+    #fireworks {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
     }
+
+    /* Balões */
+    .balloon {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: floatUp 12s linear infinite;
+      z-index: 1;
+    }
+    .heart {
+      position: relative;
+      width: 40px; height: 40px;
+      transform: rotate(-45deg);
+    }
+    .heart::before, .heart::after {
+      content: "";
+      position: absolute;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+    }
+    .heart::before { top: -20px; left: 0; }
+    .heart::after { left: 20px; top: 0; }
+    .string {
+      width: 2px; height: 60px;
+      background: #333;
+      margin-top: -5px;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) translateX(0) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      100% { transform: translateY(-120px) translateX(20px) rotate(2deg); opacity: 0; }
+    }
+
+    /* Envelope */
+    .wrapper { width: 100%; max-width: 520px; display: flex; justify-content: center; z-index: 2; position: relative; }
+    .envelope-wrapper { position: relative; width: 360px; }
+    .envelope {
+      width: 100%; height: 240px; border-radius: 10px;
+      position: relative; box-shadow: 0 18px 40px rgba(0,0,0,.5);
+      cursor: pointer;
+    }
+    .env-base { position: absolute; inset: 0; background: linear-gradient(#c53434, var(--envelope)); border-radius: 10px; z-index: 1; }
+    .env-left, .env-right { position: absolute; top: 0; bottom: 0; width: 55%; z-index: 2; }
+    .env-left { left: 0; clip-path: polygon(0 0, 0 100%, 76% 50%); background: linear-gradient(90deg,#a72626,#c43333); }
+    .env-right { right: 0; clip-path: polygon(100% 0, 24% 50%, 100% 100%); background: linear-gradient(90deg,#cf3b3b,#a72424); }
+    .env-bottom { position: absolute; left: 0; right: 0; bottom: 0; height: 55%; clip-path: polygon(0 0, 50% 65%, 100% 0, 100% 100%, 0 100%); background: linear-gradient(#9f2020,#8a1b1b); z-index: 1; }
+    .env-flap { position: absolute; inset: 0; clip-path: polygon(0 0, 100% 0, 50% 58%); background: linear-gradient(180deg, #d74343, #b92f2f); z-index: 3; }
+    .message {
+      position: absolute; left: 50%; top: 62%; transform: translate(-50%, -50%);
+      z-index: 4; pointer-events: none;
+      font-size: 1.05rem; font-weight: 600; color: #fff; text-shadow: 0 6px 18px rgba(0,0,0,.55);
+      text-align: center; width: 90%;
+    }
+    .envelope:active { transform: translateY(2px) scale(.998); }
+    dialog#lightbox { width: min(92vw, 860px); border: 0; border-radius: 14px; padding: 0; background: #0e0b0a; box-shadow: 0 30px 100px rgba(0,0,0,.6); }
+    dialog#lightbox::backdrop { background: rgba(0,0,0,.6); backdrop-filter: blur(2px); }
+    .img-wrap img { display: block; width: 100%; height: auto; border-radius: 12px; }
+    .close { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,.06); color: #fff; border: 0; border-radius: 10px; padding: 10px 12px; font-size: 14px; cursor: pointer; }
+    .envelope[role="button"]:focus { outline: 3px solid rgba(215,179,94,.18); outline-offset: 6px; }
+    @media (max-width: 420px) { .envelope-wrapper { width: 92vw; } }
   </style>
 </head>
 <body>
+  <!-- Canvas dos fogos -->
+  <canvas id="fireworks"></canvas>
+
+  <!-- Envelope -->
   <main class="wrapper">
     <div class="envelope-wrapper">
-      <!-- envelope fechado (APENAS ele é visível inicialmente) -->
-      <div class="envelope" id="envelope" role="button" tabindex="0" aria-label="Abrir convite: clique ou pressione Enter">
-        <div class="env-base" aria-hidden="true"></div>
-        <div class="env-left" aria-hidden="true"></div>
-        <div class="env-right" aria-hidden="true"></div>
-        <div class="env-bottom" aria-hidden="true"></div>
-        <div class="env-flap" aria-hidden="true"></div>
-        <!-- mensagem sobreposta: na frente do envelope -->
-        <div class="message">Convite Especial. Clique para abrir o convite.</div>
+      <div class="envelope" id="envelope" role="button" tabindex="0" aria-label="Abrir convite">
+        <div class="env-base"></div>
+        <div class="env-left"></div>
+        <div class="env-right"></div>
+        <div class="env-bottom"></div>
+        <div class="env-flap"></div>
+        <div class="message">Convite Especial.<br>Clique para abrir.</div>
       </div>
     </div>
   </main>
 
-  <!-- lightbox que mostra a imagem do convite ao clicar no envelope -->
+  <!-- Lightbox -->
   <dialog id="lightbox" aria-label="Convite">
     <div class="img-wrap">
-      <!-- substitua o src pelo seu arquivo real (mesma pasta) -->
       <img id="inviteImg" alt="Convite de 15 anos" src="convite.png" />
       <button class="close" id="closeBtn" aria-label="Fechar">✕</button>
     </div>
   </dialog>
 
   <script>
+    /* === Envelope === */
     const envelope = document.getElementById('envelope');
     const lightbox = document.getElementById('lightbox');
     const closeBtn = document.getElementById('closeBtn');
 
-    function openInvite(){
-      // abre apenas o lightbox com o convite da imagem
-      if(typeof lightbox.showModal === 'function'){
+    function openInvite() {
+      if (typeof lightbox.showModal === 'function') {
         lightbox.showModal();
       } else {
-        // fallback simples para browsers antigos
         window.open(document.getElementById('inviteImg').src, '_blank');
       }
     }
-
     envelope.addEventListener('click', openInvite);
-    envelope.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openInvite(); }});
+    envelope.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openInvite(); }});
+    closeBtn.addEventListener('click', () => lightbox.close());
+    lightbox.addEventListener('click', (e) => { if (e.target === lightbox) lightbox.close(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox.open) lightbox.close(); });
 
-    closeBtn.addEventListener('click', ()=> lightbox.close());
-    lightbox.addEventListener('click', (e)=>{ if(e.target === lightbox) lightbox.close(); });
-    document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && lightbox.open) lightbox.close(); });
+    /* === Balões === */
+    const colors = ["#e63946", "#000000"]; // vermelho e preto
+    function createBalloon() {
+      const balloon = document.createElement("div");
+      balloon.className = "balloon";
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      heart.style.background = color;
+      const styleEl = document.createElement("style");
+      const uid = "id" + Date.now() + Math.floor(Math.random()*1000);
+      heart.setAttribute("data-id", uid);
+      styleEl.innerHTML = `
+        .heart[data-id="${uid}"] { background: ${color}; }
+        .heart[data-id="${uid}"]::before,
+        .heart[data-id="${uid}"]::after { background: ${color}; }
+      `;
+      document.head.appendChild(styleEl);
+      const string = document.createElement("div");
+      string.className = "string";
+      balloon.appendChild(heart);
+      balloon.appendChild(string);
+      balloon.style.left = Math.random() * window.innerWidth + "px";
+      balloon.style.animationDuration = 10 + Math.random() * 10 + "s";
+      document.body.appendChild(balloon);
+      setTimeout(() => balloon.remove(), 20000);
+    }
+    setInterval(createBalloon, 1000);
+
+    /* === Fogos === */
+    const canvas = document.getElementById("fireworks");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    class Particle {
+      constructor(x, y, color, speed, angle) {
+        this.x = x; this.y = y; this.color = color;
+        this.speed = speed; this.angle = angle; this.alpha = 1; this.radius = 2;
+      }
+      update() { this.x += Math.cos(this.angle) * this.speed; this.y += Math.sin(this.angle) * this.speed; this.alpha -= 0.02; }
+      draw() { ctx.globalAlpha = this.alpha; ctx.fillStyle = this.color; ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2); ctx.fill(); ctx.globalAlpha = 1; }
+    }
+    let particles = [];
+    function createFirework() {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height / 2;
+      const colors = ["#ff0000", "#ffdd00", "#000000"];
+      for (let i = 0; i < 50; i++) {
+        const angle = (Math.PI * 2 * i) / 50;
+        const speed = Math.random() * 4 + 2;
+        particles.push(new Particle(x, y, colors[Math.floor(Math.random()*colors.length)], speed, angle));
+      }
+    }
+    function animateFireworks() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p, i) => { p.update(); p.draw(); if (p.alpha <= 0) particles.splice(i, 1); });
+      requestAnimationFrame(animateFireworks);
+    }
+    setInterval(createFirework, 2000);
+    animateFireworks();
+    window.addEventListener("resize", () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
   </script>
 </body>
 </html>
