@@ -34,7 +34,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      animation: floatUp 12s linear infinite;
+      animation: floatUp 8s linear forwards;
       z-index: 1;
     }
     .heart {
@@ -57,7 +57,7 @@
     }
     @keyframes floatUp {
       0% { transform: translateY(100vh) translateX(0) rotate(0deg); opacity: 0; }
-      10% { opacity: 1; }
+      5% { opacity: 1; }
       100% { transform: translateY(-120px) translateX(20px) rotate(2deg); opacity: 0; }
     }
 
@@ -143,7 +143,6 @@
       const color = colors[Math.floor(Math.random() * colors.length)];
       const heart = document.createElement("div");
       heart.className = "heart";
-      heart.style.background = color;
       const styleEl = document.createElement("style");
       const uid = "id" + Date.now() + Math.floor(Math.random()*1000);
       heart.setAttribute("data-id", uid);
@@ -158,11 +157,13 @@
       balloon.appendChild(heart);
       balloon.appendChild(string);
       balloon.style.left = Math.random() * window.innerWidth + "px";
-      balloon.style.animationDuration = 10 + Math.random() * 10 + "s";
+      balloon.style.animationDuration = 15 + Math.random() * 10 + "s";
       document.body.appendChild(balloon);
-      setTimeout(() => balloon.remove(), 20000);
+      setTimeout(() => balloon.remove(), 30000);
     }
-    setInterval(createBalloon, 1000);
+    // vários balões logo ao carregar
+    for (let i = 0; i < 10; i++) { createBalloon(); }
+    setInterval(createBalloon, 300);
 
     /* === Fogos === */
     const canvas = document.getElementById("fireworks");
@@ -193,7 +194,9 @@
       particles.forEach((p, i) => { p.update(); p.draw(); if (p.alpha <= 0) particles.splice(i, 1); });
       requestAnimationFrame(animateFireworks);
     }
-    setInterval(createFirework, 2000);
+    // vários fogos logo de início
+    for (let i = 0; i < 5; i++) { createFirework(); }
+    setInterval(createFirework, 800);
     animateFireworks();
     window.addEventListener("resize", () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
   </script>
