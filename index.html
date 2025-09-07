@@ -6,7 +6,7 @@
   <title>Você é especial. Clique aqui</title>
   <style>
     :root {
-      --bg: #f9e79f; /* fundo dourado claro */
+      --bg: #f9e79f;
       --envelope: #b12b2b;
     }
     * { box-sizing: border-box; }
@@ -29,13 +29,20 @@
     }
 
     /* Balões */
+    #balloon-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 1;
+    }
     .balloon {
       position: absolute;
       display: flex;
       flex-direction: column;
       align-items: center;
       animation: floatUp 8s linear forwards;
-      z-index: 1;
     }
     .heart {
       position: relative;
@@ -56,7 +63,7 @@
       margin-top: -5px;
     }
     @keyframes floatUp {
-      0% { transform: translateY(100vh) translateX(0) rotate(0deg); opacity: 0; }
+      0% { transform: translateY(80vh) translateX(0) rotate(0deg); opacity: 1; }
       5% { opacity: 1; }
       100% { transform: translateY(-120px) translateX(20px) rotate(2deg); opacity: 0; }
     }
@@ -81,18 +88,47 @@
       font-size: 1.05rem; font-weight: 600; color: #fff; text-shadow: 0 6px 18px rgba(0,0,0,.55);
       text-align: center; width: 90%;
     }
-    .envelope:active { transform: translateY(2px) scale(.998); }
-    dialog#lightbox { width: min(92vw, 860px); border: 0; border-radius: 14px; padding: 0; background: #0e0b0a; box-shadow: 0 30px 100px rgba(0,0,0,.6); }
-    dialog#lightbox::backdrop { background: rgba(0,0,0,.6); backdrop-filter: blur(2px); }
-    .img-wrap img { display: block; width: 100%; height: auto; border-radius: 12px; }
-    .close { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,.06); color: #fff; border: 0; border-radius: 10px; padding: 10px 12px; font-size: 14px; cursor: pointer; }
-    .envelope[role="button"]:focus { outline: 3px solid rgba(215,179,94,.18); outline-offset: 6px; }
-    @media (max-width: 420px) { .envelope-wrapper { width: 92vw; } }
+
+    /* Removido efeito de clique */
+    /* .envelope:active {
+      transform: translateY(2px) scale(.998);
+    } */
+
+    dialog#lightbox {
+      width: min(92vw, 860px);
+      border: 0; border-radius: 14px; padding: 0;
+      background: #0e0b0a;
+      box-shadow: 0 30px 100px rgba(0,0,0,.6);
+    }
+    dialog#lightbox::backdrop {
+      background: rgba(0,0,0,.6);
+      backdrop-filter: blur(2px);
+    }
+    .img-wrap img {
+      display: block;
+      width: 100%; height: auto;
+      border-radius: 12px;
+    }
+    .close {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(255,255,255,.06); color: #fff;
+      border: 0; border-radius: 10px; padding: 10px 12px;
+      font-size: 14px; cursor: pointer;
+    }
+    .envelope[role="button"]:focus {
+      outline: 3px solid rgba(215,179,94,.18); outline-offset: 6px;
+    }
+    @media (max-width: 420px) {
+      .envelope-wrapper { width: 92vw; }
+    }
   </style>
 </head>
 <body>
   <!-- Canvas dos fogos -->
   <canvas id="fireworks"></canvas>
+
+  <!-- Container fixo para os balões -->
+  <div id="balloon-container"></div>
 
   <!-- Envelope -->
   <main class="wrapper">
@@ -129,14 +165,26 @@
         window.open(document.getElementById('inviteImg').src, '_blank');
       }
     }
+
     envelope.addEventListener('click', openInvite);
-    envelope.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openInvite(); }});
+    envelope.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openInvite();
+      }
+    });
+
     closeBtn.addEventListener('click', () => lightbox.close());
-    lightbox.addEventListener('click', (e) => { if (e.target === lightbox) lightbox.close(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox.open) lightbox.close(); });
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) lightbox.close();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lightbox.open) lightbox.close();
+    });
 
     /* === Balões === */
-    const colors = ["#e63946", "#000000"]; // vermelho e preto
+    const colors = ["#e63946", "#000000"];
     function createBalloon() {
       const balloon = document.createElement("div");
       balloon.className = "balloon";
@@ -144,7 +192,7 @@
       const heart = document.createElement("div");
       heart.className = "heart";
       const styleEl = document.createElement("style");
-      const uid = "id" + Date.now() + Math.floor(Math.random()*1000);
+      const uid = "id" + Date.now() + Math.floor(Math.random() * 1000);
       heart.setAttribute("data-id", uid);
       styleEl.innerHTML = `
         .heart[data-id="${uid}"] { background: ${color}; }
@@ -158,11 +206,11 @@
       balloon.appendChild(string);
       balloon.style.left = Math.random() * window.innerWidth + "px";
       balloon.style.animationDuration = 15 + Math.random() * 10 + "s";
-      document.body.appendChild(balloon);
+      document.getElementById("balloon-container").appendChild(balloon);
       setTimeout(() => balloon.remove(), 30000);
     }
-    // vários balões logo ao carregar
-    for (let i = 0; i < 10; i++) { createBalloon(); }
+
+    for (let i = 0; i < 10; i++) createBalloon();
     setInterval(createBalloon, 300);
 
     /* === Fogos === */
@@ -170,35 +218,58 @@
     const ctx = canvas.getContext("2d");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+
     class Particle {
       constructor(x, y, color, speed, angle) {
         this.x = x; this.y = y; this.color = color;
-        this.speed = speed; this.angle = angle; this.alpha = 1; this.radius = 2;
+        this.speed = speed; this.angle = angle;
+        this.alpha = 1; this.radius = 2;
       }
-      update() { this.x += Math.cos(this.angle) * this.speed; this.y += Math.sin(this.angle) * this.speed; this.alpha -= 0.02; }
-      draw() { ctx.globalAlpha = this.alpha; ctx.fillStyle = this.color; ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2); ctx.fill(); ctx.globalAlpha = 1; }
+      update() {
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed;
+        this.alpha -= 0.02;
+      }
+      draw() {
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
     }
+
     let particles = [];
     function createFirework() {
       const x = Math.random() * canvas.width;
       const y = Math.random() * canvas.height / 2;
-      const colors = ["#ff0000", "#ffdd00", "#000000"];
+      const fireworkColors = ["#ff0000", "#ffdd00", "#000000"];
       for (let i = 0; i < 50; i++) {
         const angle = (Math.PI * 2 * i) / 50;
         const speed = Math.random() * 4 + 2;
-        particles.push(new Particle(x, y, colors[Math.floor(Math.random()*colors.length)], speed, angle));
+        particles.push(new Particle(x, y, fireworkColors[Math.floor(Math.random() * fireworkColors.length)], speed, angle));
       }
     }
+
     function animateFireworks() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach((p, i) => { p.update(); p.draw(); if (p.alpha <= 0) particles.splice(i, 1); });
+      particles.forEach((p, i) => {
+        p.update();
+        p.draw();
+        if (p.alpha <= 0) particles.splice(i, 1);
+      });
       requestAnimationFrame(animateFireworks);
     }
-    // vários fogos logo de início
-    for (let i = 0; i < 5; i++) { createFirework(); }
+
+    for (let i = 0; i < 5; i++) createFirework();
     setInterval(createFirework, 800);
     animateFireworks();
-    window.addEventListener("resize", () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
   </script>
 </body>
 </html>
